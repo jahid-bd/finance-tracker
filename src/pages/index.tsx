@@ -96,23 +96,23 @@ export default function App() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...transactions];
+    let filteredTrans = [...transactions];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.title.toLowerCase().includes(filterValue.toLowerCase())
+      filteredTrans = filteredTrans.filter((trans) =>
+        trans.title.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
       statusFilter !== 'all' &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.type)
+      filteredTrans = filteredTrans.filter((trans) =>
+        Array.from(statusFilter).includes(trans.type)
       );
     }
 
-    return filteredUsers;
+    return filteredTrans;
   }, [filterValue, statusFilter, transactions]);
 
   const items = React.useMemo(() => {
@@ -498,7 +498,7 @@ export default function App() {
       <div className="w-full overflow-hidden">
         <Table
           isCompact
-          aria-label="User table with custom cells, pagination and sorting"
+          aria-label="Transaction table with custom cells, pagination and sorting"
           selectionMode="single"
           bottomContent={
             <Pagination
@@ -541,11 +541,11 @@ export default function App() {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody emptyContent="No users found">
-            {sortedItems.map((user) => (
-              <TableRow key={user.id}>
+          <TableBody emptyContent="No transactions found">
+            {sortedItems.map((trans) => (
+              <TableRow key={trans.id}>
                 {(columnKey) => (
-                  <TableCell>{renderCell(user, columnKey)}</TableCell>
+                  <TableCell>{renderCell(trans, columnKey)}</TableCell>
                 )}
               </TableRow>
             ))}
