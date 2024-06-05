@@ -99,10 +99,13 @@ export default function App() {
     let filteredTrans = [...transactions];
 
     if (hasSearchFilter) {
-      filteredTrans = filteredTrans.filter((trans) =>
-        trans.title.toLowerCase().includes(filterValue.toLowerCase())
+      filteredTrans = filteredTrans.filter(
+        (trans) =>
+          trans.title.toLowerCase().includes(filterValue.toLowerCase()) ||
+          trans.category.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
+
     if (
       statusFilter !== 'all' &&
       Array.from(statusFilter).length !== statusOptions.length
@@ -349,7 +352,7 @@ export default function App() {
               base: 'w-full sm:max-w-[44%]',
               inputWrapper: 'border-1',
             }}
-            placeholder="Search by title..."
+            placeholder="Search by title or category..."
             size="sm"
             startContent={<SearchIcon className="text-default-300" />}
             value={filterValue}
