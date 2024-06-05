@@ -431,6 +431,7 @@ export default function App() {
             <select
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
+              value={rowsPerPage}
             >
               <option value="5">5</option>
               <option value="10">10</option>
@@ -449,7 +450,7 @@ export default function App() {
   ]);
 
   const totalIncome = useMemo(() => {
-    return transactions.reduce((acc, transaction) => {
+    return filteredItems.reduce((acc, transaction) => {
       if (transaction.type === 'income') {
         return acc + transaction.amount;
       }
@@ -458,7 +459,7 @@ export default function App() {
   }, [transactions, filteredItems, onSearchChange]);
 
   const totalExpenses = useMemo(() => {
-    return transactions.reduce((acc, transaction) => {
+    return filteredItems.reduce((acc, transaction) => {
       if (transaction.type === 'expense') {
         return acc + transaction.amount;
       }
