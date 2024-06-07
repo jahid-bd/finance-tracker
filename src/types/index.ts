@@ -6,7 +6,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export interface Transaction {
   id: number;
-  date: string;
+  date: any;
   title: string;
   amount: number;
   type: 'income' | 'expense';

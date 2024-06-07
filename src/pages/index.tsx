@@ -48,10 +48,12 @@ const typeColorMap: Record<string, ChipProps['color']> = {
   expense: 'danger',
 };
 
-function formatDate(date: Date): string {
+function formatDate(dateString: Date) {
+  const date = new Date(dateString);
   const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero based
+  const day = String(date.getDate()).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 }
 
@@ -95,7 +97,7 @@ export default function App() {
   // sorting state
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: 'date',
-    direction: 'descending',
+    direction: 'ascending',
   });
 
   // pagination state
@@ -168,6 +170,8 @@ export default function App() {
               <p className="text-bold text-small capitalize">{cellValue}</p>
             </div>
           );
+        case 'date':
+          return formatDate(cellValue);
         case 'type':
           return (
             <Chip
@@ -306,7 +310,7 @@ export default function App() {
       const date = new Date();
       const newTransaction: Transaction = {
         id: transactions.length + 1,
-        date: formatDate(date),
+        date: date,
         title: formState.title,
         amount: parseFloat(formState.amount),
         type: formState.type as 'income' | 'expense',
@@ -314,8 +318,8 @@ export default function App() {
       };
 
       setTransactions((prevTransactions) => [
-        ...prevTransactions,
         newTransaction,
+        ...prevTransactions,
       ]);
 
       resetForm();
@@ -499,7 +503,7 @@ export default function App() {
 
   useEffect(() => {
     if (!transactions.length) {
-      const data = generateDummyData(10);
+      const data = generateDummyData(1000);
       setTransactions(data);
     }
   }, []);

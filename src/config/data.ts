@@ -112,14 +112,15 @@ export const animals = [
   { key: 'crocodile', label: 'Crocodile' },
 ];
 
-function getRandomDate(start: Date, end: Date): string {
-  const date = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+function getRandomPastDate(): Date {
+  const today = new Date();
+  const randomPastDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    Math.floor(Math.random() * today.getDate())
   );
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
+
+  return randomPastDate;
 }
 
 function getRandomElement<T>(array: T[]): T {
@@ -161,7 +162,7 @@ export function generateDummyData(count: number): Transaction[] {
 
     transactions.push({
       id: i,
-      date: getRandomDate(new Date(2023, 0, 1), new Date(2024, 11, 31)),
+      date: getRandomPastDate(),
       title: getRandomElement(titles),
       amount: amount,
       type: type,
