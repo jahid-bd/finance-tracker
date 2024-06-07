@@ -55,6 +55,15 @@ function formatDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+interface FormState {
+  id: number | '';
+  title: string;
+  amount: string;
+  type: 'income' | 'expense' | '';
+  category: string;
+  date: DateValue | string;
+}
+
 const INITIAL_VISIBLE_COLUMNS = [
   'date',
   'title',
@@ -65,26 +74,37 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 export default function App() {
+  // states
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     const savedTransactions = localStorage.getItem('transactions');
 
     return savedTransactions ? JSON.parse(savedTransactions) : [];
   });
 
+  // filter state
   const [filterValue, setFilterValue] = React.useState('');
+
+  // table colums state
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
+
+  // category filter state
   const [statusFilter, setStatusFilter] = React.useState<Selection>('all');
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  // sorting state
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: 'date',
     direction: 'descending',
   });
+
+  // pagination state
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(1);
 
   const pages = Math.ceil(transactions.length / rowsPerPage);
 
+  // serach filter
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -95,6 +115,7 @@ export default function App() {
     );
   }, [visibleColumns]);
 
+  // filtering logic
   const filteredItems = React.useMemo(() => {
     let filteredTrans = [...transactions];
 
@@ -118,6 +139,7 @@ export default function App() {
     return filteredTrans;
   }, [filterValue, statusFilter, transactions]);
 
+  //
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
@@ -131,7 +153,7 @@ export default function App() {
       const second = b[sortDescriptor.column as keyof Transaction] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+      return sortDescriptor.direction === 'ascending' ? -cmp : cmp;
     });
   }, [sortDescriptor, items, transactions]);
 
@@ -205,6 +227,8 @@ export default function App() {
     [transactions]
   );
 
+  // handlers
+
   const onRowsPerPageChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setRowsPerPage(Number(e.target.value));
@@ -223,15 +247,6 @@ export default function App() {
   }, []);
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
-  interface FormState {
-    id: number | '';
-    title: string;
-    amount: string;
-    type: 'income' | 'expense' | '';
-    category: string;
-    date: DateValue | string;
-  }
 
   const [formState, setFormState] = useState<FormState>({
     id: '',
@@ -310,14 +325,14 @@ export default function App() {
   };
 
   // Delete transaction item
-  const handleDelete = useCallback((id: number) => {
+  const handleDelete = (id: number) => {
     const updatedTransactions = transactions.filter(
       (transaction) => transaction.id !== id
     );
     setTransactions(updatedTransactions);
 
     toast.success('Transaction deleted successfully');
-  }, []);
+  };
 
   // update transaction item
   const [isToUpdate, setIsToUpdate] = useState(false);
@@ -450,7 +465,10 @@ export default function App() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
+    transactions,
   ]);
+
+  // stats calulation
 
   const totalIncome = useMemo(() => {
     return filteredItems.reduce((acc, transaction) => {
@@ -475,17 +493,18 @@ export default function App() {
   }, [totalIncome, totalExpenses]);
 
   // Save transaction in local storage
-
   useEffect(() => {
     localStorage.setItem('transactions', JSON.stringify(transactions));
   }, [transactions]);
 
   useEffect(() => {
     if (!transactions.length) {
-      const data = generateDummyData(1000);
+      const data = generateDummyData(10);
       setTransactions(data);
     }
   }, []);
+
+  console.log(transactions);
 
   return (
     <main>
